@@ -39,3 +39,5 @@ sub GetTopHit {
 
         return ($subject, $homology, $alignmentLength,$qframe,$sframe);
 }
+
+1;

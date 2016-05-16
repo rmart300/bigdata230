@@ -177,3 +177,5 @@ sub parseClustalOutput
 
 close MUTATIONOUT;
 }
+
+1;

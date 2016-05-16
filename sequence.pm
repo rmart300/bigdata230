@@ -160,3 +160,5 @@ sub convert_to_protein {
 
         return $protein_seq;
 }
+
+1;

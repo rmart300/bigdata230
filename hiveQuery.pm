@@ -21,3 +21,5 @@ sub getReferenceSequenceGeneHash
 		$reference_sequence_gene{$gene}{'startPos'} = $gene_start_pos;
 		$reference_sequence_gene{$gene}{'endPos'} = $gene_end_pos;
 }
+
+1;
