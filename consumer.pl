@@ -14,6 +14,7 @@ my $alignmentLength;
 my $qframe;
 my $sframe;
 my $subtype;
+my $refSubtype;
 
 ###################### BLAST
 ($topBlastHit, $homologyRef, $alignmentLength, $qframe, $sframe) = blast::GetTopHit($blastQuery, $blastSubject);
@@ -27,7 +28,9 @@ else {
 	$subtype = $blastOutput[2];
 }
 
-print "$topBlastHit $subtype\n";
+$refSubtype = getRefSubtype($subtype);
+
+print "$topBlastHit $subtype $refSubtype\n";
 
 open SEQFILE, "$blastQuery" or die $!;
 my $nucleotideSequence;
@@ -44,7 +47,9 @@ close SEQFILE;
 print "$nucleotideSequence\n";
 
 ####query hive table to get reference sequence
-my ($ref_accession, $reference_sequence, $aa_ref_seq); # = hiveQuery::getReference($subtype);
+my ($ref_accession, $reference_sequence, $aa_ref_seq) = &getReference($refSubtype);
+
+print "$ref_accession\n";
 
 ###################### correct reading frame
 $nucleotideSequence = sequence::correct_reading_frame($nucleotideSequence, $aa_ref_seq);
@@ -73,4 +78,32 @@ mkdir($file_path);
 clustal::execute_clustal($aa_sequence, $aa_ref_seq,$file_path,$sequence,$reference,$results);
 
 clustal::parseClustalOutput($sequence, $reference, $file_path);
-		
+
+#####################
+
+sub getRefSubtype 
+{
+	my $subtype = shift;
+	if ($subtype eq '1b' || $subtype eq '2b') { return $subtype; }
+	else 
+	{
+		return substr($subtype,0,1) . 'a';
+	}
+}
+
+sub getReference
+{
+	my $subtype = shift;
+	open REF, "reference_sequence.fas";
+	while (<REF>) 
+	{
+		chomp;
+		my @lineContents = split ',', $_;
+		if ($subtype eq $lineContents[1])
+		{
+			return ($lineContents[0],$lineContents[2],$lineContents[3]);
+		}
+	}
+
+	die "reference sequence not found\n";
+}		

@@ -1,14 +1,14 @@
 package blast;
 use strict;
 
-our $blastnExecutable = "/home/ec2-user/ncbi-blast-2.3.0+/bin/blastn";
+our $blastnExecutable = "~/ncbi-blast-2.3.0+/bin/blastn";
 our $blastOutfmt = 10;
 
 sub GetTopHit {
         my $queryFile = shift;
         my $subjectFile = shift;
         my $accession = shift;
-        my $blastOutput = "/data/blastOutput/$accession.csv";
+        my $blastOutput = "/tmp/blastOutput/$accession.csv";
 
         system("$blastnExecutable -outfmt \"$blastOutfmt\" -query $queryFile -subject $subjectFile -num_alignments 1 >$blastOutput");
 

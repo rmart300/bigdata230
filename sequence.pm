@@ -3,8 +3,8 @@ use strict;
 
 sub correct_reading_frame
 {
-	my $nucleotideSequence;
-	my $reference_sequence;
+	my $nucleotideSequence = shift;
+	my $reference_sequence = shift;
 	
 	#translate in each frame
     my $firstFrame = convert_to_protein($nucleotideSequence);
