@@ -1,13 +1,21 @@
 package clustal;
 use strict;
 
-sub execute_clustal{
+our $sequence="";
+our $reference="";
+our $results="";
+#my $file_path="/tmp/alignment_output/$accession/";
+our $file_path="/data/home/smartin/alignmentOutput/";
+our $clustalPath="/data/CLUSTAL/clustalw-2.1-linux-x86_64-libcppstatic/";
+
+sub execute_clustal
+{
         my $query_seq=$_[0];
         my $subject_seq=$_[1];
-        my $file_path=$_[2];
-        my $sequence=$_[3];
-        my $reference = $_[4];
-        my $results = $_[5];
+	my $accession =$_[2];
+	my $ref_accession=$_[3];
+	my $nucleotideSequence = $_[4];
+	my $parseOutput=$_[5];
 
         open (IN_CLUSTAL,">$file_path"."inClustal");
         print IN_CLUSTAL ">Sequence,\n$query_seq\n";
@@ -16,9 +24,11 @@ sub execute_clustal{
 
         my $params="-INFILE=$file_path"."inClustal -align -QUIET -GAPOPEN=3 -GAPEXT=3";
 
-        system("~/CLUSTAL/clustalw-2.1-linux-x86_64-libcppstatic/clustalw2 $params");
+        #system("~/CLUSTAL/clustalw-2.1-linux-x86_64-libcppstatic/clustalw2 $params");
+	system($clustalPath."clustalw2 $params");
 
-        open OUT_CLUSTAL, "$file_path"."inClustal.aln";
+
+        open OUT_CLUSTAL, "$file_path"."inClustal.aln" or die $!;
 
         while(my $line=<OUT_CLUSTAL>){
                 my @split=split(/\s+/,$line);
@@ -37,21 +47,26 @@ sub execute_clustal{
                 }
         }
         close OUT_CLUSTAL;
-        $_[3]=$sequence;
-        $_[4]= $reference;
-        $_[5]=$results;
 
         #delete temp files
         unlink "$file_path"."inClustal";
-		unlink "$file_path"."inClustal.aln";
+	unlink "$file_path"."inClustal.aln";
         unlink "$file_path"."inClustal.dnd";
+
+
+	if ($parseOutput eq 'true') {	&parseClustalOutput($accession,$ref_accession, $nucleotideSequence); }
 }
 
 sub parseClustalOutput
 {
-	my $sequence = shift;
-	my $reference = shift;
-	my $file_path = shift;
+	#print "$sequence\n$reference\n";
+
+	#my $sequence = shift;
+	#my $reference = shift;
+	#my $file_path = shift;
+	my $accession = shift;
+	my $ref_accession = shift;
+	my $nucleotideSequence = shift;
 	
 	my $sequenceStartPos = 0;
 	my $sequenceEndPos = length($reference);
@@ -63,25 +78,58 @@ sub parseClustalOutput
 	#chop dashes off front of alignment
 	if ($reference =~ /^[\-]+/)
 	{
+		#print "found dashes at front of reference\n";
+
 		#find number of preceding dashes
-		my $indexOfSequenceBase = index($reference,'\w');
+		my $indexOfSequenceBase = 0;
+		for (my $i = 0; $i<length($reference); $i++) 
+		{
+			if (substr($reference,$i,1) ne "-") 
+			{
+				$indexOfSequenceBase = $i;
+				last;
+			}
+		}
+
+		#print $indexOfSequenceBase."\n";
 
 		#chop sequence and reference by number of preceding dashes
 		$sequence = substr($sequence, $indexOfSequenceBase);
-		#if (!string.IsNullOrEmpty(nucleotideSequence)) { nucleotideSequence = nucleotideSequence.Substring(indexOfSequenceBase * 3); }
+		if (length($nucleotideSequence) > 0) 
+		{ 
+			$nucleotideSequence = substr($nucleotideSequence,$indexOfSequenceBase * 3); 
+		}
 		$reference = substr($reference, $indexOfSequenceBase);
 	}
 
 	#chop dashes off of end of alignment
 	if ($reference =~ /[\-]+$/)
 	{
+		#print "found dashes at end of reference\n";
+		
 		#find number of trailing dashes
-		my $indexOfSequenceBase = rindex($reference, '\w');
+		my $indexOfSequenceBase = length($reference) - 1; 
+                my $sequenceDeletionCount = 0;
+		for (my $i = length($reference)-1; $i > 0; $i--)
+                {
+                        if (substr($reference,$i,1) ne "-")
+                        {
+                                $indexOfSequenceBase = $i;
+				last;
+                        }
+			else 
+			{
+				$sequenceDeletionCount++;
+			}
+                }
+
 
 		#chop sequence and reference by number of preceding dashes
 		$sequence = substr($sequence, 0, $indexOfSequenceBase + 1);
-		#my sequenceDeletionCount = $sequence.Count<char>(s => s == '-');
-		#if (!string.IsNullOrEmpty(nucleotideSequence)) { nucleotideSequence = nucleotideSequence.Substring(0, (indexOfSequenceBase + 1 - sequenceDeletionCount) * 3); }
+		if (length($nucleotideSequence) > 0) 
+		{ 
+			$nucleotideSequence = substr($nucleotideSequence,0,($indexOfSequenceBase + 1 - $sequenceDeletionCount) * 3); 
+		}
 		$reference = substr($reference, 0, $indexOfSequenceBase + 1);
 		
 		$sequenceEndPos = length($reference) + $sequenceStartPos;
@@ -91,21 +139,45 @@ sub parseClustalOutput
 	#chop dashes off the end of alignment
 	if ($sequence =~ /[\-]+$/)
 	{
+		#print "found dashes at end of sequence\n";
+
 		#find number of trailing dashes
-		my $indexOfSequenceBase = rindex($sequence, '\w');
+		my $indexOfSequenceBase = length($sequence) - 1; 
+		for (my $i = length($sequence)-1; $i > 0; $i--) 
+		{
+			if (substr($sequence,$i,1) ne "-") 
+			{
+				$indexOfSequenceBase = $i;
+				last;
+			}
+		}
+		#print $indexOfSequenceBase . "\n";
+
 		$sequenceEndPos = $indexOfSequenceBase + $sequenceStartPos;
 
 		#chop sequence and reference by number of preceding dashes
 		$sequence = substr($sequence, 0, $indexOfSequenceBase + 1);
 		$reference = substr($reference, 0, $indexOfSequenceBase + 1);
-		$results = substr(results, 0, $indexOfSequenceBase + 1);
 	}
 
 	#chop dashes off the front of alignment
-	if ($sequence =~ /[\-]+$/)
+	if ($sequence =~ /^[\-]+/)
 	{
+		#print "found dashes at front of sequence\n";
+		
 		#find number of preceding dashes
-		my $indexOfSequenceBase = index($sequence, '\w');
+		my $indexOfSequenceBase = 0;
+                for (my $i = 0; $i<length($sequence); $i++)
+                {
+                        if (substr($sequence,$i,1) ne "-")
+                        {
+                                $indexOfSequenceBase = $i;
+                                last;
+                        }
+                }
+
+		#print $indexOfSequenceBase . "\n";
+
 		$sequenceStartPos = $indexOfSequenceBase + $sequenceStartPos;
 
 		#chop sequence
@@ -113,8 +185,34 @@ sub parseClustalOutput
 		$reference = substr($reference, $indexOfSequenceBase);
 	}
 
+
+	if (length($nucleotideSequence) > 0 && $sequence =~ /-/)
+        {
+            for (my $i = 0; $i < length($sequence); $i++)
+            {
+                #add deletion to nucleotide sequence
+                if (substr($sequence,$i,1) eq "-")
+                {
+                    $nucleotideSequence = substr($nucleotideSequence,0, $i*3) . "---" . substr($nucleotideSequence,($i+1)*3 - 3);
+                }
+            }
+
+            
+        }
+
+	#get positions of genes in reference_sequence - can be different per genotype
+	###this could be a hive query as well
+	my %reference_sequence_gene = getReferenceSequenceGeneHash($ref_accession);
+
+	if (scalar(keys %reference_sequence_gene) <1)
+	{
+        	print "No reference sequence genes found for $ref_accession\n";
+	        exit(0);
+	} #cannot proceed if data not found
+
+
 	#Parse the result strings into a list of positions
-	open MUTATIONOUT, ">$file_path/$accession_mutation.csv" or die $!;
+	open MUTATIONOUT, ">$file_path\/$accession\_mutation.csv" or die $!;
 	my $position = $sequenceStartPos;
 	my $insertionOffset = 0;
 	foreach (keys %reference_sequence_gene)
@@ -124,17 +222,21 @@ sub parseClustalOutput
 
 		for (; $position + $insertionOffset < (length($sequence) + $sequenceStartPos)
 			 && $position + $insertionOffset < (length($reference) + $sequenceStartPos)
-			 && $position >= $reference_sequence_gene{$gene}{'startPos'};
-			 && $position <= $reference_sequence_gene{$gene}{'endPos'}; )
+			 && $position >= $reference_sequence_gene{$gene}{'startpos'}
+			 && $position <= $reference_sequence_gene{$gene}{'endpos'}; )
 		{
 			$mutationLength++;
 			my $readyToCreateMutation = 'false';
 
 			#if reached end of sequence or insertion not found, then ready to create mutation
 			if ($position - $sequenceStartPos + $mutationLength + $insertionOffset >= length($sequence))
+			{
 				$readyToCreateMutation = 'true';
-			else if ($reference[$position - $sequenceStartPos + $mutationLength + $insertionOffset] != '-')
+			}
+			elsif (substr($reference,$position - $sequenceStartPos + $mutationLength + $insertionOffset,1) ne "-")
+			{
 				$readyToCreateMutation = 'true';
+			}
 
 			if ($readyToCreateMutation)
 			{
@@ -146,18 +248,21 @@ sub parseClustalOutput
 
 				for (my $j = 0; $j < $mutationLength; $j++)
 				{
-					$aa_mut = substr($sequence,($position - $sequenceStartPos + $insertionOffset + j), 1);
+					$aa_mut = substr($sequence,($position - $sequenceStartPos + $insertionOffset + $j), 1);
 					$aa_ins = $j;
-					$aa_codon += substr($nucleotideSequence,($position - $sequenceStartPos + $insertionOffset + $j) * 3, 3);				
+					$aa_codon = substr($nucleotideSequence,($position - $sequenceStartPos + $insertionOffset + $j) * 3, 3);				
 				}
 
-				if ($aa_mut =~ /O/))
+				if ($aa_mut =~ /O/)
 				{
 					$aa_mut =~ s/O/\*/g;
 				}
 
-				$aa_ref = $reference[$position - $sequenceStartPos + $insertionOffset];
-				if ($aa_ref =~ /O/) { $aa_ref =~ s/O/\*/; }
+				$aa_ref = substr($reference,$position - $sequenceStartPos + $insertionOffset,1);
+				if ($aa_ref =~ /O/) 
+				{ 
+					$aa_ref =~ s/O/\*/; 
+				}
 
 				$aa_pos = $position; 
 				#pr.TherapeuticAreaID = ampliconGene.Value.TherapeuticAreaID;
@@ -167,7 +272,9 @@ sub parseClustalOutput
 
 				#increment insertion offset if insertion found
 				if ($mutationLength > 1)
+				{
 					$insertionOffset += $mutationLength - 1;
+				}
 
 				$mutationLength = 0; #reset codon length
 			}
@@ -177,5 +284,25 @@ sub parseClustalOutput
 
 close MUTATIONOUT;
 }
+
+sub getReferenceSequenceGeneHash
+{
+        my $ref_accession = shift;
+        my %ref_seq_gene_hash;
+
+        open REFSEQGENE, "reference_sequence_gene.csv";
+        while (<REFSEQGENE>) {
+                chomp;
+                my @data = split ',', $_;
+                if ($data[0] eq $ref_accession)
+                {
+                        $ref_seq_gene_hash{$data[2]}{'startpos'} = $data[3];
+                        $ref_seq_gene_hash{$data[2]}{'endpos'} = $data[4];
+                }
+        }
+
+        return %ref_seq_gene_hash;
+}
+
 
 1;
