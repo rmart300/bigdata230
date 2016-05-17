@@ -12,7 +12,9 @@ kafka
 2 parse file, send each sequence to consumer
 
 #consumer
-Perl
+consumer.pl, clustal.pm, sequence.pm, blast.pm
+user must set filePath and clustalPath variables in perl modules to correspond with current environment
+
 ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.3.0+-x64-linux.tar.gz
 3 blast against subtype database
 	get subtype
