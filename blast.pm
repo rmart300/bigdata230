@@ -1,21 +1,21 @@
 package blast;
 use strict;
 
-our $blastnExecutable = "/data/BLAST/blastn";
-#our $blastnExecutable = "~/ncbi-blast-2.3.0+/bin/blastn";
-
+#our $blastnExecutable = "/data/BLAST/blastn";
+our $blastnExecutable = "~/ncbi-blast-2.3.0+/bin/blastn";
+our $blastOutputPath = "/home/ec2-user/blastOutput/";
 our $blastOutfmt = 10;
 
 sub GetTopHit {
         my $queryFile = shift;
         my $subjectFile = shift;
         my $accession = shift;
-        #my $blastOutput = "/tmp/blastOutput/$accession.csv";
-        my $blastOutput = "/data/home/smartin/blastOutput/$accession.csv";
+        my $blastOutput = $blastOutputPath . $accession . ".csv";
 
         system("$blastnExecutable -outfmt \"$blastOutfmt\" -query $queryFile -subject $subjectFile -num_alignments 1 >$blastOutput");
 
-        open BLASTOUT, $blastOutput or die $!;
+        print $blastOutput . "\n";
+        open BLASTOUT, "$blastOutput" or die $!;
         my %resultsHash;
 
         my $subject;

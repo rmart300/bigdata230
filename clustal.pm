@@ -4,7 +4,14 @@ use strict;
 our $sequence="";
 our $reference="";
 our $results="";
+<<<<<<< HEAD
 our $clustalPath="/data/CLUSTAL/clustalw-2.1-linux-x86_64-libcppstatic/";
+=======
+our $file_path="/home/ec2-user/alignmentOutput/";
+#our $file_path="/data/home/smartin/alignmentOutput/";
+#our $clustalPath="/data/CLUSTAL/clustalw-2.1-linux-x86_64-libcppstatic/";
+our $clustalPath="/home/ec2-user/clustalw-2.1-linux-x86_64-libcppstatic/";
+>>>>>>> origin/master
 
 sub execute_clustal
 {
@@ -48,9 +55,9 @@ sub execute_clustal
         close OUT_CLUSTAL;
 
         #delete temp files
-        unlink "$file_path"."inClustal";
-	unlink "$file_path"."inClustal.aln";
-        unlink "$file_path"."inClustal.dnd";
+        #unlink "$file_path"."inClustal";
+	    #unlink "$file_path"."inClustal.aln";
+        #unlink "$file_path"."inClustal.dnd";
 
 
 	if ($parseOutput eq 'true') {	&parseClustalOutput($accession,$ref_accession, $nucleotideSequence); }
