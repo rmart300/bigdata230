@@ -9,7 +9,7 @@ my $accession = $ARGV[0];
 my $blastQuery = $ARGV[1]; #fasta file with sample sequence - nucleotide
 my $blastSubject = $ARGV[2]; #reference_sequence_subtype file - nucleotide
 my $referenceSequenceFile = $ARGV[3];
-my $alignmentOutputPath = "/data/home/smartin/alignmentOutput/";
+my $alignmentOutputPath = "/home/ec2-user/alignmentOutput/";
 #my $alignmentOutputPath="/tmp/alignment_output/$accession/";
 my $topBlastHit;
 my $blastAccession;
@@ -58,8 +58,8 @@ $nucleotideSequence = sequence::correct_reading_frame($nucleotideSequence, $aa_r
 my $aa_sequence = sequence::convert_to_protein ($nucleotideSequence);
 
 my $date_obtained = strftime "%m/%d/%Y", localtime;
-open SEQOUT, ">$alignmentOutputPathsequenceOutput.csv" or die $!;
-print SEQOUT "$accession,,$nucleotide_sequence,$aa_sequence,$date_obtained,$subtype,$homologyRef,$alignmentLength,$qframe,$sframe,$blast_accession,$ref_accession";
+open SEQOUT, ">$alignmentOutputPath$accession\_sequenceOutput.csv" or die $!;
+print SEQOUT "$accession,,$nucleotideSequence,$aa_sequence,$date_obtained,$subtype,$homologyRef,$alignmentLength,$qframe,$sframe,$blastAccession,$ref_accession";
 close SEQOUT or die$
 
 ###################### CLUSTAL
