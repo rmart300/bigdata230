@@ -9,7 +9,10 @@ my $accession = $ARGV[0];
 my $blastQuery = $ARGV[1]; #fasta file with sample sequence - nucleotide
 my $blastSubject = $ARGV[2]; #reference_sequence_subtype file - nucleotide
 my $referenceSequenceFile = $ARGV[3];
+my $alignmentOutputPath = "/data/home/smartin/alignmentOutput/";
+#my $alignmentOutputPath="/tmp/alignment_output/$accession/";
 my $topBlastHit;
+my $blastAccession;
 my $homologyRef;
 my $alignmentLength;
 my $qframe;
@@ -26,6 +29,7 @@ if (length($topBlastHit) < 1) {
 }
 else {
 	my @blastOutput = split('\|',$topBlastHit);
+	$blastAccession = $blastOutput[1];
 	$subtype = $blastOutput[2];
 }
 
@@ -63,7 +67,7 @@ close SEQOUT or die$
 $aa_sequence =~ s/\*/O/g;
 $aa_ref_seq =~ s/\*/O/g;
 
-clustal::execute_clustal($aa_sequence, $aa_ref_seq,$accession,$ref_accession,$nucleotideSequence,'true');
+clustal::execute_clustal($aa_sequence, $aa_ref_seq,$accession,$ref_accession,$nucleotideSequence,$alignmentOutputPath,'true');
 
 #####################
 
