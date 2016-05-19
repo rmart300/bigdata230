@@ -3,6 +3,7 @@ use strict;
 use sequence;
 use blast;
 use clustal;
+use POSIX qw(strftime);
 
 my $accession = $ARGV[0];
 my $blastQuery = $ARGV[1]; #fasta file with sample sequence - nucleotide
@@ -51,6 +52,11 @@ my ($ref_accession, $reference_sequence, $aa_ref_seq) = &getReference($refSubtyp
 $nucleotideSequence = sequence::correct_reading_frame($nucleotideSequence, $aa_ref_seq);
 
 my $aa_sequence = sequence::convert_to_protein ($nucleotideSequence);
+
+my $date_obtained = strftime "%m/%d/%Y", localtime;
+open SEQOUT, ">$alignmentOutputPathsequenceOutput.csv" or die $!;
+print SEQOUT "$accession,,$nucleotide_sequence,$aa_sequence,$date_obtained,$subtype,$homologyRef,$alignmentLength,$qframe,$sframe,$blast_accession,$ref_accession";
+close SEQOUT or die$
 
 ###################### CLUSTAL
 #remove stop codons before alignment
