@@ -11,7 +11,10 @@ sampleMut=$(hive -S -e -hiveconf accession=$accession "use default; select count
 if $sampleMut = 0 then
 	`perl consumer.pl $accession $queryFile $subjectFile $referenceFile`
 
-	`pig loadMutationsIntoHive.pig`
+    #copy to output alignment files to tmp directory and load pig script
+    #sudo to hdfs user to copy files to hdfs /user/guest/ and then execute script
+
+	`pig -f /tmp/bigdata230/loadMutationsIntoHive.pig -param sequenceOutputFile="/user/guest/$accession\_sequenceOutput.csv" -param alignmentOutputFile="/user/guest/$accession\_mutation.csv" -param accession="$accession" -useHCatalog`
 else
 	echo "$accession already in database"
 fi
