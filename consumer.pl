@@ -7,7 +7,10 @@ use clustal;
 my $accession = $ARGV[0];
 my $blastQuery = $ARGV[1]; #fasta file with sample sequence - nucleotide
 my $blastSubject = $ARGV[2]; #reference_sequence_subtype file - nucleotide
+my $alignmentOutputPath = "/data/home/smartin/alignmentOutput/";
+#my $alignmentOutputPath="/tmp/alignment_output/$accession/";
 my $topBlastHit;
+my $blastAccession;
 my $homologyRef;
 my $alignmentLength;
 my $qframe;
@@ -24,6 +27,7 @@ if (length($topBlastHit) < 1) {
 }
 else {
 	my @blastOutput = split('\|',$topBlastHit);
+	$blastAccession = $blastOutput[1];
 	$subtype = $blastOutput[2];
 }
 
@@ -51,12 +55,17 @@ $nucleotideSequence = sequence::correct_reading_frame($nucleotideSequence, $aa_r
 
 my $aa_sequence = sequence::convert_to_protein ($nucleotideSequence);
 
+my $date_obtained = 
+open SEQOUT, ">$alignmentOutputPathsequenceOutput.csv" or die $!;
+print SEQOUT "$accession,,$nucleotide_sequence,$aa_sequence,$date_obtained,$subtype,$homologyRef,$alignmentLength,$qframe,$sframe,$blast_accession,$ref_accession";
+close SEQOUT or die$
+
 ###################### CLUSTAL
 #remove stop codons before alignment
 $aa_sequence =~ s/\*/O/g;
 $aa_ref_seq =~ s/\*/O/g;
 
-clustal::execute_clustal($aa_sequence, $aa_ref_seq,$accession,$ref_accession,$nucleotideSequence,'true');
+clustal::execute_clustal($aa_sequence, $aa_ref_seq,$accession,$ref_accession,$nucleotideSequence,$alignmentOutputPath,'true');
 
 #####################
 

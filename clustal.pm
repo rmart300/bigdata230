@@ -4,18 +4,17 @@ use strict;
 our $sequence="";
 our $reference="";
 our $results="";
-#my $file_path="/tmp/alignment_output/$accession/";
-our $file_path="/data/home/smartin/alignmentOutput/";
 our $clustalPath="/data/CLUSTAL/clustalw-2.1-linux-x86_64-libcppstatic/";
 
 sub execute_clustal
 {
         my $query_seq=$_[0];
         my $subject_seq=$_[1];
-	my $accession =$_[2];
-	my $ref_accession=$_[3];
-	my $nucleotideSequence = $_[4];
-	my $parseOutput=$_[5];
+		my $accession =$_[2];
+		my $ref_accession=$_[3];
+		my $nucleotideSequence = $_[4];
+		my $file_path = $_[5];
+		my $parseOutput=$_[6];
 
         open (IN_CLUSTAL,">$file_path"."inClustal");
         print IN_CLUSTAL ">Sequence,\n$query_seq\n";
@@ -266,7 +265,7 @@ sub parseClustalOutput
 
 				$aa_pos = $position; 
 				#pr.TherapeuticAreaID = ampliconGene.Value.TherapeuticAreaID;
-				print MUTATIONOUT "$gene,$aa_ref,$aa_pos,$aa_ins,$aa_mut,$aa_codon\n";
+				print MUTATIONOUT "$accession,$ref_accession,$gene,$aa_ref,$aa_pos,$aa_ins,$aa_mut,$aa_codon\n";
 				
 				$position++;
 
