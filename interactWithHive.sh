@@ -4,11 +4,12 @@
 accession=$0
 queryFile=$1
 subjectFile=$2
+referenceFile=$3
 
 sampleMut=$(hive -S -e -hiveconf accession=$accession "use default; select count(*) from sample_mutation where accession = ${hiveconf:$accession});
 
 if $sampleMut = 0 then
-	`perl consumer.pl $accession $queryFile $subjectFile`
+	`perl consumer.pl $accession $queryFile $subjectFile $referenceFile`
 
 	`pig loadMutationsIntoHive.pig`
 else
