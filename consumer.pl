@@ -9,8 +9,7 @@ my $accession = $ARGV[0];
 my $blastQuery = $ARGV[1]; #fasta file with sample sequence - nucleotide
 my $blastSubject = $ARGV[2]; #reference_sequence_subtype file - nucleotide
 my $referenceSequenceFile = $ARGV[3];
-my $alignmentOutputPath = "/home/ec2-user/alignmentOutput/";
-#my $alignmentOutputPath="/tmp/alignment_output/$accession/";
+my $alignmentOutputPath=$ALIGNMENT_OUTPUT;
 my $topBlastHit;
 my $blastAccession;
 my $homologyRef;

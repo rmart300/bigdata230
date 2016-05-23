@@ -1,9 +1,8 @@
 package blast;
 use strict;
 
-#our $blastnExecutable = "/data/BLAST/blastn";
-our $blastnExecutable = "~/ncbi-blast-2.3.0+/bin/blastn";
-our $blastOutputPath = "/home/ec2-user/blastOutput/";
+our $blastnExecutable = "$BLAST_HOME/bin/blastn";
+our $blastOutputPath = $BLAST_OUTPUT;
 our $blastOutfmt = 10;
 
 sub GetTopHit {
