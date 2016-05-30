@@ -1,8 +1,8 @@
 package blast;
 use strict;
 
-our $blastnExecutable = "$BLAST_HOME/bin/blastn";
-our $blastOutputPath = $BLAST_OUTPUT;
+our $blastnExecutable = "/usr/local/ncbi-blast-2.3.0+/bin/blastn";
+our $blastOutputPath = "/tmp/bigdata230/blastOutput/";
 our $blastOutfmt = 10;
 
 sub GetTopHit {
@@ -11,9 +11,8 @@ sub GetTopHit {
         my $accession = shift;
         my $blastOutput = $blastOutputPath . $accession . ".csv";
 
-        system("$blastnExecutable -outfmt \"$blastOutfmt\" -query $queryFile -subject $subjectFile -num_alignments 1 >$blastOutput");
+        system("$blastnExecutable -outfmt \"$blastOutfmt\" -query $queryFile -subject $subjectFile -num_alignments 1 > $blastOutput");
 
-        print $blastOutput . "\n";
         open BLASTOUT, "$blastOutput" or die $!;
         my %resultsHash;
 

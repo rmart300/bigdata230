@@ -9,7 +9,7 @@ my $accession = $ARGV[0];
 my $blastQuery = $ARGV[1]; #fasta file with sample sequence - nucleotide
 my $blastSubject = $ARGV[2]; #reference_sequence_subtype file - nucleotide
 my $referenceSequenceFile = $ARGV[3];
-my $alignmentOutputPath=$ALIGNMENT_OUTPUT;
+my $alignmentOutputPath="/tmp/bigdata230/alignmentOutput/";
 my $topBlastHit;
 my $blastAccession;
 my $homologyRef;
@@ -57,6 +57,7 @@ $nucleotideSequence = sequence::correct_reading_frame($nucleotideSequence, $aa_r
 my $aa_sequence = sequence::convert_to_protein ($nucleotideSequence);
 
 my $date_obtained = strftime "%m/%d/%Y", localtime;
+print "$alignmentOutputPath$accession\_sequenceOutput.csv\n";
 open SEQOUT, ">$alignmentOutputPath$accession\_sequenceOutput.csv" or die $!;
 print SEQOUT "$accession,,$nucleotideSequence,$aa_sequence,$date_obtained,$subtype,$homologyRef,$alignmentLength,$qframe,$sframe,$blastAccession,$ref_accession";
 close SEQOUT or die$

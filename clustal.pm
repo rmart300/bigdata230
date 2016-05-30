@@ -4,10 +4,8 @@ use strict;
 our $sequence="";
 our $reference="";
 our $results="";
-our $file_path="/home/ec2-user/alignmentOutput/";
-#our $file_path="/data/home/smartin/alignmentOutput/";
-#our $clustalPath="/data/CLUSTAL/clustalw-2.1-linux-x86_64-libcppstatic/";
-our $clustalPath="/home/ec2-user/clustalw-2.1-linux-x86_64-libcppstatic/";
+our $file_path="/tmp/bigdata230/alignmentOutput/";
+our $clustalPath="/usr/local/clustalw-2.1-linux-x86_64-libcppstatic/";
 
 sub execute_clustal
 {
