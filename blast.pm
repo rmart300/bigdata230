@@ -31,8 +31,8 @@ sub GetTopHit {
                 $subject = $lineContents[1];
                 $homology = $lineContents[2];
                 $alignmentLength = $lineContents[3];
-                $qframe = $lineContents[4];
-                $sframe = $lineContents[5];
+                $qframe = $lineContents[5];
+                $sframe = $lineContents[6];
         }
 
         close BLASTOUT or die $!;

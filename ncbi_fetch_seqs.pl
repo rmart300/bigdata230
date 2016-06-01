@@ -1,5 +1,7 @@
 #http://www.ncbi.nlm.nih.gov/books/NBK25498/
 use LWP::Simple;
+
+my $outFile = $ARGV[0];
 $query = '((HCV[Organism]) NOT clone) NOT clonal';
 
 #assemble the esearch URL
@@ -16,7 +18,7 @@ $key = $1 if ($output =~ /<QueryKey>(\d+)<\/QueryKey>/);
 $count = $1 if ($output =~ /<Count>(\d+)<\/Count>/);
 
 #open output file for writing
-open(OUT, ">hcv.fna") || die "Can't open file!\n";
+open(OUT, ">$outFile") || die "Can't open file!\n";
 
 #retrieve data in batches of 500
 $retmax = 500;

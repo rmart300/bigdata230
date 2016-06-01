@@ -17,18 +17,18 @@ sub execute_clustal
 		my $file_path = $_[5];
 		my $parseOutput=$_[6];
 
-        open (IN_CLUSTAL,">$file_path"."inClustal");
+        open (IN_CLUSTAL,">$file_path"."$accession");
         print IN_CLUSTAL ">Sequence,\n$query_seq\n";
         print IN_CLUSTAL ">Reference,\n$subject_seq\n";
         close IN_CLUSTAL;
 
-        my $params="-INFILE=$file_path"."inClustal -align -QUIET -GAPOPEN=3 -GAPEXT=3";
+        my $params="-INFILE=$file_path"."$accession -align -QUIET -GAPOPEN=3 -GAPEXT=3";
 
         #system("~/CLUSTAL/clustalw-2.1-linux-x86_64-libcppstatic/clustalw2 $params");
 	system($clustalPath."clustalw2 $params");
 
 
-        open OUT_CLUSTAL, "$file_path"."inClustal.aln" or die $!;
+        open OUT_CLUSTAL, "$file_path"."$accession\.aln" or die $!;
 
         while(my $line=<OUT_CLUSTAL>){
                 my @split=split(/\s+/,$line);
@@ -49,9 +49,9 @@ sub execute_clustal
         close OUT_CLUSTAL;
 
         #delete temp files
-        #unlink "$file_path"."inClustal";
-	    #unlink "$file_path"."inClustal.aln";
-        #unlink "$file_path"."inClustal.dnd";
+        unlink "$file_path"."$accession";
+	    unlink "$file_path"."$accession\.aln";
+        unlink "$file_path"."$accession\.dnd";
 
 
 	if ($parseOutput eq 'true') {	&parseClustalOutput($accession,$ref_accession, $nucleotideSequence); }
@@ -212,7 +212,7 @@ sub parseClustalOutput
 
 
 	#Parse the result strings into a list of positions
-	open MUTATIONOUT, ">$file_path\/$accession\_mutation.csv" or die $!;
+	open MUTATIONOUT, ">$file_path"."$accession\_mutation.csv" or die $!;
 	my $position = $sequenceStartPos;
 	my $insertionOffset = 0;
 	foreach (keys %reference_sequence_gene)
@@ -264,7 +264,7 @@ sub parseClustalOutput
 					$aa_ref =~ s/O/\*/; 
 				}
 
-				$aa_pos = $position; 
+				$aa_pos = $position - $reference_sequence_gene{$gene}{'startpos'} + 1; 
 				#pr.TherapeuticAreaID = ampliconGene.Value.TherapeuticAreaID;
 				print MUTATIONOUT "$accession,$ref_accession,$gene,$aa_ref,$aa_pos,$aa_ins,$aa_mut,$aa_codon\n";
 				

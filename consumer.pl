@@ -34,7 +34,7 @@ else {
 
 $refSubtype = getRefSubtype($subtype);
 
-print "TopBlastHit: $topBlastHit Subtype: $subtype ReferenceSubtype: $refSubtype\n";
+#print "TopBlastHit\: $topBlastHit Subtype\: $subtype ReferenceSubtype\: $refSubtype\n";
 
 open SEQFILE, "$blastQuery" or die $!;
 my $nucleotideSequence;
