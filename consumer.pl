@@ -23,7 +23,7 @@ my $refSubtype;
 ($topBlastHit, $homologyRef, $alignmentLength, $qframe, $sframe) = blast::GetTopHit($blastQuery, $blastSubject, $accession);
 
 if (length($topBlastHit) < 1) {
-	print "No blast hit found for $accession\n";
+	system("echo \"No blast hit found for $accession\"");
 	exit(1); #not HCV so exit
 }
 else {
@@ -67,7 +67,7 @@ close SEQOUT or die$
 $aa_sequence =~ s/\*/O/g;
 $aa_ref_seq =~ s/\*/O/g;
 
-clustal::execute_clustal($aa_sequence, $aa_ref_seq,$accession,$ref_accession,$nucleotideSequence,$alignmentOutputPath,'true');
+clustal::execute_clustal($aa_sequence, $aa_ref_seq,$accession,$ref_accession,$nucleotideSequence,'true');
 
 #####################
 

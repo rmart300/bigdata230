@@ -10,8 +10,9 @@ sub GetTopHit {
         my $subjectFile = shift;
         my $accession = shift;
         my $blastOutput = $blastOutputPath . $accession . ".csv";
+        print "$blastnExecutable -outfmt $blastOutfmt -query $queryFile -subject $subjectFile -num_alignments 1 -out $blastOutput\n";
 
-        system("$blastnExecutable -outfmt \"$blastOutfmt\" -query $queryFile -subject $subjectFile -num_alignments 1 > $blastOutput");
+        system("$blastnExecutable -outfmt $blastOutfmt -query $queryFile -subject $subjectFile -num_alignments 1 -out $blastOutput");
 
         open BLASTOUT, "$blastOutput" or die $!;
         my %resultsHash;
