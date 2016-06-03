@@ -10,7 +10,8 @@
 --sampleMuts = filter sampleMutationHive by accession = '$accession';
 --sampleMutsCount = FOREACH (GROUP sampleMuts ALL) GENERATE COUNT(sampleMuts);
 
-muts = LOAD '$alignmentOutputFile' USING  PigStorage(',') 
-as (accession:chararray,reference_accession:chararray,gene:chararray,aaref:chararray,aapos:int,aains:int,aasub:chararray,codon:chararray);
+seqs = LOAD '$sequenceOutputFile' USING PigStorage(',')
+as (accession:chararray,definition:chararray,nucleotide_sequence:chararray,amino_acid_sequence:chararray,date_obtained:chararray,subtype:chararray,subtype_homology:double,alignment_length:int,qframe:int,sframe:int,subtype_accession:chararray,reference_accession:chararray);
 
-STORE muts INTO 'sample_mutation' USING org.apache.hive.hcatalog.pig.HCatStorer();
+STORE seqs INTO 'sample_sequence' USING org.apache.hive.hcatalog.pig.HCatStorer();
+
